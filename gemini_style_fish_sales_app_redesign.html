@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fish Pond Sales & Ledger — Gemini Redesign</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & GEMINI AMBIENT THEMING (LIGHT + DARK)
+       ========================================================================== */
+    :root {
+      --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      /* Light Mode (Default — Gemini Frost White to Airy Sky Blue Mist) */
+      --outer-stage-bg: #eef2f9;
+      --app-bg: radial-gradient(circle at 85% 92%, rgba(186, 218, 255, 0.72) 0%, rgba(207, 228, 255, 0.45) 38%, rgba(248, 250, 255, 0) 75%),
+                linear-gradient(180deg, #ffffff 0%, #f8faff 28%, #e8f2ff 68%, #cfe4ff 100%);
+      --drawer-bg: radial-gradient(circle at 18% 88%, rgba(186, 218, 255, 0.7) 0%, rgba(227, 240, 255, 0.5) 42%, rgba(255, 255, 255, 0) 80%),
+                   linear-gradient(180deg, #ffffff 0%, #f6f9ff 35%, #e3f0ff 78%, #d2e6ff 100%);
+
+      --surface-glass: rgba(255, 255, 255, 0.58);
+      --surface-glass-strong: rgba(255, 255, 255, 0.82);
+      --surface-subtle: rgba(26, 115, 232, 0.055);
+      --surface-pill: rgba(255, 255, 255, 0.68);
+      --surface-input: rgba(255, 255, 255, 0.72);
+      --surface-modal: rgba(255, 255, 255, 0.94);
+
+      --text-primary: #0f172a;
+      --text-secondary: #52627a;
+      --text-muted: #7c8ca3;
+
+      --border-hairline: rgba(15, 23, 42, 0.07);
+      --border-strong: rgba(26, 115, 232, 0.16);
+
+      --accent-primary: #1a73e8;
+      --accent-secondary: #4285f4;
+      --accent-soft-bg: rgba(26, 115, 232, 0.1);
+      --accent-lavender: #6b7de0;
+      --fab-gradient: linear-gradient(135deg, #1a73e8 0%, #4285f4 55%, #6b88f7 100%);
+      --fab-shadow: 0 10px 26px -6px rgba(26, 115, 232, 0.48);
+
+      --nav-bg: linear-gradient(to top, rgba(214, 234, 255, 0.78) 0%, rgba(226, 241, 255, 0.42) 72%, rgba(226, 241, 255, 0) 100%);
+      --nav-active-bg: rgba(26, 115, 232, 0.14);
+      --nav-active-glow: 0 4px 14px -2px rgba(26, 115, 232, 0.22);
+      --nav-active-text: #1a73e8;
+      --nav-inactive-text: #5a6d86;
+
+      --danger-text: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.09);
+
+      --phone-frame-border: rgba(15, 23, 42, 0.08);
+      --phone-frame-shadow: 0 28px 70px -15px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    }
+
+    [data-theme="dark"] {
+      /* Dark Mode (Gemini AMOLED Black Edges + Subtle Center Bluish Ambient Glow) */
+      --outer-stage-bg: #020305;
+      --app-bg: radial-gradient(circle at 50% 42%, rgba(37, 99, 235, 0.18) 0%, rgba(23, 37, 84, 0.14) 38%, rgba(5, 7, 11, 0.98) 76%, #000000 100%),
+                #000000;
+      --drawer-bg: radial-gradient(circle at 46% 40%, rgba(37, 99, 235, 0.16) 0%, rgba(23, 37, 84, 0.12) 40%, rgba(3, 5, 9, 1) 80%),
+                   #000000;
+
+      --surface-glass: rgba(255, 255, 255, 0.04);
+      --surface-glass-strong: rgba(15, 23, 42, 0.78);
+      --surface-subtle: rgba(94, 151, 246, 0.09);
+      --surface-pill: rgba(255, 255, 255, 0.055);
+      --surface-input: rgba(255, 255, 255, 0.05);
+      --surface-modal: rgba(12, 16, 26, 0.96);
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --border-hairline: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(94, 151, 246, 0.24);
+
+      --accent-primary: #60a5fa;
+      --accent-secondary: #4285f4;
+      --accent-soft-bg: rgba(96, 165, 250, 0.14);
+      --accent-lavender: #8da2fb;
+      --fab-gradient: linear-gradient(135deg, #2563eb 0%, #4285f4 55%, #7c8df8 100%);
+      --fab-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.55);
+
+      --nav-bg: linear-gradient(to top, rgba(6, 10, 20, 0.85) 0%, rgba(14, 22, 42, 0.55) 72%, rgba(14, 22, 42, 0) 100%);
+      --nav-active-bg: rgba(96, 165, 250, 0.18);
+      --nav-active-glow: 0 4px 16px -2px rgba(96, 165, 250, 0.28);
+      --nav-active-text: #7cb3ff;
+      --nav-inactive-text: #7c8da6;
+
+      --danger-text: #f87171;
+      --danger-bg: rgba(248, 113, 113, 0.12);
+
+      --phone-frame-border: rgba(255, 255, 255, 0.1);
+      --phone-frame-shadow: 0 32px 80px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: var(--font-body);
+      background: var(--outer-stage-bg);
+      color: var(--text-primary);
+      overflow: hidden;
+      transition: background 0.35s ease, color 0.3s ease;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE MOBILE VIEWPORT CONTAINER
+       Centered phone frame on desktop (max-width 430px), fullscreen on mobile
+       ========================================================================== */
+    .stage-wrapper {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app-shell {
+      position: relative;
+      width: 100%;
+      height: 100dvh;
+      background: var(--app-bg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.35s ease;
+    }
+
+    @media (min-width: 500px) {
+      .stage-wrapper {
+        padding: 18px 16px;
+      }
+      .app-shell {
+        max-width: 430px;
+        height: min(880px, calc(100dvh - 36px));
+        border-radius: 36px;
+        border: 1px solid var(--phone-frame-border);
+        box-shadow: var(--phone-frame-shadow);
+      }
+    }
+
+    /* Glass & Utility Styles */
+    .glass-surface {
+      background: var(--surface-glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .glass-pill {
+      background: var(--surface-pill);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .hairline-b {
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .hairline-t {
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .hairline-r {
+      border-right: 1px solid var(--border-hairline);
+    }
+
+    .gemini-text-gradient {
+      background: linear-gradient(95deg, #1a73e8 0%, #4285f4 45%, #7b8cde 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    [data-theme="dark"] .gemini-text-gradient {
+      background: linear-gradient(95deg, #60a5fa 0%, #818cf8 55%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Avatar Gemini Multi-Blue Ring */
+    .avatar-ring {
+      background: conic-gradient(from 180deg, #4285f4, #7b8cde, #38bdf8, #1a73e8, #4285f4);
+      padding: 2px;
+      border-radius: 9999px;
+    }
+
+    /* Scrollable Main Area */
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 112px;
+    }
+    .main-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Smooth Tab Content Reveal */
+    .tab-view {
+      display: none;
+      animation: tabFadeIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .tab-view.active {
+      display: block;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       100% FULL-SCREEN SLIDE-OUT MENU DRAWER (GEMINI STYLE)
+       Edge-to-edge 100% width & height, supports swipe-left to dismiss
+       ========================================================================== */
+    .fullscreen-drawer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 60;
+      background: var(--drawer-bg);
+      transform: translateX(-100%);
+      transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      flex-direction: column;
+      touch-action: pan-y;
+      will-change: transform;
+    }
+
+    .fullscreen-drawer.open {
+      transform: translateX(0);
+    }
+
+    .fullscreen-drawer.dragging {
+      transition: none;
+    }
+
+    /* Drawer Nav Row */
+    .drawer-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 9999px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+      text-align: left;
+    }
+    .drawer-nav-item:active {
+      transform: scale(0.985);
+    }
+    .drawer-nav-item:hover {
+      background: var(--surface-subtle);
+    }
+    .drawer-nav-item.active {
+      background: var(--accent-soft-bg);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    /* Seamless Borderless Gemini Blurred Bottom Navigation Bar */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      background: transparent;
+      border-top: none;
+      padding: 12px 10px calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .bottom-nav::before {
+      content: "";
+      position: absolute;
+      inset: -16px 0 0 0;
+      z-index: -1;
+      background: var(--nav-bg);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      -webkit-mask-image: linear-gradient(to top, #000 68%, transparent 100%);
+      mask-image: linear-gradient(to top, #000 68%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      padding: 4px 2px;
+      color: var(--nav-inactive-text);
+      font-size: 10.5px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-btn .nav-icon-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 30px;
+      border-radius: 9999px;
+      transition: background 0.22s ease, transform 0.18s ease;
+    }
+
+    .nav-btn.active {
+      color: var(--nav-active-text);
+      font-weight: 600;
+    }
+    .nav-btn.active .nav-icon-pill {
+      background: var(--nav-active-bg);
+      box-shadow: var(--nav-active-glow);
+    }
+    .nav-btn:active .nav-icon-pill {
+      transform: scale(0.92);
+    }
+
+    /* Floating Action Button (Gemini Gradient) */
+    .gemini-fab {
+      background: var(--fab-gradient);
+      color: #ffffff;
+      box-shadow: var(--fab-shadow);
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+    }
+    .gemini-fab:active {
+      transform: scale(0.95);
+    }
+
+    /* Inputs & Selects */
+    .minimal-input {
+      width: 100%;
+      background: var(--surface-input);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-primary);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .minimal-input:focus {
+      border-color: var(--accent-primary);
+    }
+    .minimal-input::placeholder {
+      color: var(--text-muted);
+    }
+    [data-theme="dark"] select option {
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+
+    /* Bottom Sheet Modal */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      background: rgba(2, 6, 23, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-sheet {
+      width: 100%;
+      max-height: 86%;
+      overflow-y: auto;
+      background: var(--surface-modal);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border-hairline);
+      border-radius: 28px 28px 0 0;
+      padding: 14px 20px 26px;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .modal-backdrop.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    /* Account Popover */
+    .account-popover {
+      position: absolute;
+      top: 64px;
+      right: 16px;
+      width: 278px;
+      z-index: 55;
+      background: var(--surface-modal);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-hairline);
+      border-radius: 24px;
+      box-shadow: 0 20px 44px -10px rgba(0, 0, 0, 0.22);
+      transform-origin: top right;
+      opacity: 0;
+      transform: scale(0.92) translateY(-6px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .account-popover.open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Toast Notification */
+    .toast-pill {
+      position: absolute;
+      bottom: 92px;
+      left: 50%;
+      transform: translateX(-50%) translateY(18px);
+      z-index: 95;
+      background: var(--text-primary);
+      color: var(--outer-stage-bg);
+      padding: 10px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    [data-theme="dark"] .toast-pill {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .toast-pill.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Segmented Pill */
+    .seg-pill {
+      padding: 7px 13px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .seg-pill.active {
+      background: var(--accent-primary);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage-wrapper">
+    <div class="app-shell" id="appShell">
+
+      <!-- ====================================================================
+           MINIMAL GEMINI-STYLE HEADER (ZERO "RAI FISH" TEXT)
+           ==================================================================== -->
+      <header class="flex items-center justify-between px-4 pt-3.5 pb-2.5 z-20 shrink-0">
+        <!-- Left: Clean Hamburger Menu Button -->
+        <button id="openDrawerBtn" aria-label="Open Navigation Menu"
+          class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-95"
+          style="color: var(--text-primary);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7"></line>
+            <line x1="4" y1="12" x2="16" y2="12"></line>
+            <line x1="4" y1="17" x2="20" y2="17"></line>
+          </svg>
+        </button>
+
+        <!-- Center: Restored Frosted Pill/Box Badge (Dynamic Active Tab Title) -->
+        <div class="glass-pill px-4 py-1.5 rounded-full flex items-center justify-center shadow-sm">
+          <span id="headerContextLabel" class="font-display font-semibold text-[13.5px] tracking-tight" style="color: var(--text-primary);">Date Sales</span>
+        </div>
+
+        <!-- Right: Theme Toggle + Google Account Avatar -->
+        <div class="flex items-center gap-2">
+          <button id="themeToggleBtn" aria-label="Toggle Light/Dark Mode"
+            class="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-95"
+            style="color: var(--text-secondary);">
+            <!-- Moon Icon (shown in light mode) -->
+            <svg id="iconMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <!-- Sun Icon (shown in dark mode) -->
+            <svg id="iconSun" class="hidden" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+          </button>
+
+          <!-- Top-Right Google Account Avatar with Gemini Multi-Blue Ring -->
+          <button id="avatarBtn" aria-label="Google Account" class="avatar-ring active:scale-95 transition-transform">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-display font-bold text-[13px] text-white"
+              style="background: linear-gradient(135deg, #1a73e8 0%, #5e97f6 100%);">
+              IO
+            </div>
+          </button>
+        </div>
+      </header>
+
+      <!-- ====================================================================
+           ACCOUNT POPOVER (ON AVATAR TAP)
+           ==================================================================== -->
+      <div id="accountPopover" class="account-popover p-4">
+        <div class="flex items-center gap-3 pb-3.5 hairline-b">
+          <div class="avatar-ring shrink-0">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center font-display font-bold text-[16px] text-white"
+              style="background: linear-gradient(135deg, #1a73e8 0%, #5e97f6 100%);">
+              IO
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="font-display font-semibold text-[15px] truncate" style="color: var(--text-primary);">Ignite Op</div>
+            <div class="text-[12px] truncate" style="color: var(--text-secondary);">igniteo249@gmail.com</div>
+            <div class="inline-flex items-center gap-1 mt-1 text-[11px] font-medium" style="color: var(--accent-primary);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+              </svg>
+              Drive Synced
+            </div>
+          </div>
+        </div>
+        <div class="pt-2.5 flex flex-col gap-1">
+          <button onclick="openSettingsModal(); closeAccountPopover();"
+            class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium hover:bg-blue-500/10 transition-colors"
+            style="color: var(--text-primary);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            App Settings
+          </button>
+          <button onclick="syncNowToast(); closeAccountPopover();"
+            class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium hover:bg-blue-500/10 transition-colors"
+            style="color: var(--text-primary);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+              <path d="M16 16h5v5"></path>
+            </svg>
+            Backup Ledger to Drive
+          </button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MAIN SCROLLABLE CONTENT AREA (5 TABS)
+           ==================================================================== -->
+      <main class="main-scroll px-5">
+
+        <!-- ================================================================
+             TAB 1: DATE SALES (HOME - DEFAULT)
+             ================================================================ -->
+        <section id="tab-date-sales" class="tab-view active pt-2">
+
+          <!-- Borderless Date Switcher -->
+          <div class="flex items-center justify-between py-2">
+            <button id="prevDateBtn" aria-label="Previous Date"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-90"
+              style="color: var(--text-secondary);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            <button id="dateDisplayBtn" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors hover:bg-blue-500/10">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-primary);">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span id="currentDateLabel" class="font-display font-semibold text-[15px] tracking-tight" style="color: var(--text-primary);">Today · 24 Nov 2026</span>
+            </button>
+
+            <button id="nextDateBtn" aria-label="Next Date"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-90"
+              style="color: var(--text-secondary);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Open Typography 2-Column Stat Strip (No Clunky Boxes!) -->
+          <div class="grid grid-cols-2 py-6 hairline-b">
+            <div class="pr-4 hairline-r">
+              <div class="text-[12px] font-medium tracking-wide uppercase" style="color: var(--text-muted);">Day's Total Sales</div>
+              <div id="homeTotalAmount" class="font-display font-bold text-[30px] leading-tight mt-1.5 tracking-tight gemini-text-gradient">₹0.00</div>
+              <div id="homeTotalClients" class="text-[12.5px] mt-1 font-medium" style="color: var(--text-secondary);">0 clients</div>
+            </div>
+            <div class="pl-5">
+              <div class="text-[12px] font-medium tracking-wide uppercase" style="color: var(--text-muted);">Day's Fish Weight</div>
+              <div id="homeTotalWeight" class="font-display font-bold text-[30px] leading-tight mt-1.5 tracking-tight" style="color: var(--text-primary);">0.0 <span class="text-[18px] font-semibold" style="color: var(--text-secondary);">kg</span></div>
+              <div id="homeTotalPieces" class="text-[12.5px] mt-1 font-medium" style="color: var(--text-secondary);">0 pieces</div>
+            </div>
+          </div>
+
+          <!-- Gemini-Style Pill Search Bar -->
+          <div class="mt-5 relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="homeSearchInput" type="text" placeholder="Filter client name or fish type..."
+              class="glass-pill w-full pl-11 pr-4 py-3.5 rounded-full text-[14px] outline-none focus:border-blue-500/40 transition-all"
+              style="color: var(--text-primary);" />
+          </div>
+
+          <!-- Section Header -->
+          <div class="flex items-center justify-between mt-7 mb-3">
+            <h2 class="font-display font-semibold text-[16px] tracking-tight" style="color: var(--text-primary);">Client Fish Sales</h2>
+            <span id="homeSalesBadge" class="text-[12px] font-medium px-2.5 py-0.5 rounded-full"
+              style="background: var(--accent-soft-bg); color: var(--accent-primary);">0 sales</span>
+          </div>
+
+          <!-- Sales List / Minimalist Empty State -->
+          <div id="homeSalesContainer"></div>
+
+        </section>
+
+        <!-- ================================================================
+             TAB 2: NEW SALE / SALES & ORDERS
+             ================================================================ -->
+        <section id="tab-new-sale" class="tab-view pt-3">
+          <div class="mb-5">
+            <h1 class="font-display font-bold text-[24px] tracking-tight" style="color: var(--text-primary);">Sales & Orders</h1>
+            <p class="text-[13.5px] mt-1 leading-relaxed" style="color: var(--text-secondary);">Automatic weight-based pricing in Rupees (₹) & live pond ledger.</p>
+          </div>
+
+          <!-- Open Horizontal 3-Metric Strip -->
+          <div class="grid grid-cols-3 gap-2 py-4 hairline-t hairline-b">
+            <div>
+              <div class="text-[11px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Revenue</div>
+              <div id="nsRevenue" class="font-display font-bold text-[19px] mt-1 gemini-text-gradient">₹0</div>
+            </div>
+            <div class="pl-2 border-l" style="border-color: var(--border-hairline);">
+              <div class="text-[11px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Weight Sold</div>
+              <div id="nsWeight" class="font-display font-bold text-[19px] mt-1" style="color: var(--text-primary);">0.0 kg</div>
+            </div>
+            <div class="pl-2 border-l" style="border-color: var(--border-hairline);">
+              <div class="text-[11px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Pieces</div>
+              <div id="nsPieces" class="font-display font-bold text-[19px] mt-1" style="color: var(--text-primary);">0 pcs</div>
+            </div>
+          </div>
+
+          <!-- History Header -->
+          <div class="flex items-center justify-between mt-6 mb-3">
+            <h2 id="nsHistoryTitle" class="font-display font-semibold text-[15px]" style="color: var(--text-primary);">Sales History (0)</h2>
+            <span class="text-[11.5px] font-medium px-2.5 py-0.5 rounded-full" style="background: var(--accent-soft-bg); color: var(--accent-primary);">Weight × ₹/kg</span>
+          </div>
+
+          <div id="newSaleHistoryList"></div>
+        </section>
+
+        <!-- ================================================================
+             TAB 3: FISH TYPES & LIVE CALCULATOR
+             ================================================================ -->
+        <section id="tab-fish-types" class="tab-view pt-3">
+          <div class="mb-4">
+            <h1 class="font-display font-bold text-[24px] tracking-tight" style="color: var(--text-primary);">Fish Types & Rates</h1>
+            <p class="text-[13.5px] mt-1" style="color: var(--text-secondary);">Instant weight-based bill calculator & species pricing.</p>
+          </div>
+
+          <!-- Live Weight & Price Calculator (Single Clean Frosted Surface) -->
+          <div class="glass-surface rounded-3xl p-4 mt-2">
+            <div class="flex items-center gap-2.5 mb-3.5">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="8" y1="14" x2="8" y2="14"></line>
+                  <line x1="12" y1="14" x2="12" y2="14"></line>
+                  <line x1="16" y1="14" x2="16" y2="14"></line>
+                  <line x1="8" y1="18" x2="8" y2="18"></line>
+                  <line x1="12" y1="18" x2="12" y2="18"></line>
+                  <line x1="16" y1="18" x2="16" y2="18"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="font-display font-semibold text-[14.5px]" style="color: var(--text-primary);">Live Price Calculator</div>
+                <div class="text-[11.5px]" style="color: var(--text-secondary);">Compute client's ₹ bill instantly</div>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-[11.5px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Selling Species</label>
+                <select id="calcSpeciesSelect" class="minimal-input"></select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11.5px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Weight (kg)</label>
+                  <input id="calcWeightInput" type="number" step="0.1" min="0" placeholder="0.0" class="minimal-input" />
+                </div>
+                <div>
+                  <label class="block text-[11.5px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Pieces</label>
+                  <input id="calcPiecesInput" type="number" step="1" min="0" placeholder="0" class="minimal-input" />
+                </div>
+              </div>
+
+              <!-- Auto-Calculated Formula Bar -->
+              <div class="flex items-center justify-between px-4 py-3.5 rounded-2xl mt-1" style="background: var(--accent-soft-bg);">
+                <div>
+                  <div id="calcFormulaText" class="text-[11.5px] font-medium" style="color: var(--text-secondary);">0.00 kg × ₹180/kg</div>
+                  <div class="text-[12px] font-semibold mt-0.5" style="color: var(--text-primary);">Auto Price</div>
+                </div>
+                <div id="calcResultPrice" class="font-display font-bold text-[24px] gemini-text-gradient">₹0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Species & Rates List -->
+          <div class="flex items-center justify-between mt-7 mb-2.5">
+            <h2 id="speciesListTitle" class="font-display font-semibold text-[15.5px]" style="color: var(--text-primary);">Fish Species & Rates</h2>
+            <button onclick="openAddSpeciesModal()"
+              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-transform active:scale-95"
+              style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Species
+            </button>
+          </div>
+
+          <div id="fishSpeciesList" class="divide-y" style="border-color: var(--border-hairline);"></div>
+        </section>
+
+        <!-- ================================================================
+             TAB 4: SALES REPORT & ANALYTICS
+             ================================================================ -->
+        <section id="tab-sales-report" class="tab-view pt-3">
+          <!-- Header with Properly Aligned Horizontal Share CSV + Recycle Bin -->
+          <div class="flex items-start justify-between gap-2 mb-5">
+            <div>
+              <h1 class="font-display font-bold text-[23px] leading-tight tracking-tight" style="color: var(--text-primary);">Sales Reports</h1>
+              <p class="text-[13px] mt-0.5" style="color: var(--text-secondary);">Analytics & CSV exports</p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0 pt-0.5">
+              <button onclick="openRecycleBinModal()" aria-label="Recycle Bin"
+                class="glass-pill px-2.5 py-2 rounded-full inline-flex items-center gap-1 text-[12px] font-medium transition-transform active:scale-95"
+                style="color: var(--text-secondary);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                  <path d="M10 11v6M14 11v6"></path>
+                </svg>
+                Bin
+              </button>
+              <button onclick="exportSalesCSV()"
+                class="gemini-fab px-3.5 py-2 rounded-full inline-flex items-center gap-1.5 text-[12px] font-semibold whitespace-nowrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Share CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Segmented Period Pill Selector -->
+          <div class="glass-pill p-1 rounded-full flex items-center justify-between gap-1 overflow-x-auto">
+            <button class="seg-pill flex-1 text-center" data-period="today">Today</button>
+            <button class="seg-pill flex-1 text-center" data-period="yesterday">Yesterday</button>
+            <button class="seg-pill flex-1 text-center active" data-period="7d">7 Days</button>
+            <button class="seg-pill flex-1 text-center" data-period="30d">30 Days</button>
+          </div>
+
+          <!-- Specific Date Search Row -->
+          <div class="mt-5 pb-5 hairline-b">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[12.5px] font-semibold" style="color: var(--text-primary);">Search Specific Date</span>
+              <div class="flex items-center gap-2 text-[12px]">
+                <button onclick="setReportSpecificDate('2026-11-24')" class="font-medium hover:underline" style="color: var(--accent-primary);">Today</button>
+                <span style="color: var(--text-muted);">·</span>
+                <button onclick="setReportSpecificDate('2026-11-23')" class="font-medium hover:underline" style="color: var(--text-secondary);">Yesterday</button>
+              </div>
+            </div>
+            <input id="reportDateInput" type="date" value="2026-11-24" class="minimal-input" />
+          </div>
+
+          <!-- Open Metric Summary (2x2 Clean Typography Grid) -->
+          <div class="flex items-center justify-between mt-5 mb-3">
+            <span id="reportRangeLabel" class="text-[13px] font-semibold" style="color: var(--text-primary);">Fish sales · Last 7 Days</span>
+            <span id="reportLogsCount" class="text-[12px] font-medium" style="color: var(--accent-primary);">0 logs</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-y-5 gap-x-4 py-4 hairline-b">
+            <div>
+              <div class="text-[11.5px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Total Revenue</div>
+              <div id="repRevenue" class="font-display font-bold text-[24px] mt-1 gemini-text-gradient">₹0.00</div>
+            </div>
+            <div>
+              <div class="text-[11.5px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Total Weight</div>
+              <div id="repWeight" class="font-display font-bold text-[24px] mt-1" style="color: var(--text-primary);">0.0 kg</div>
+            </div>
+            <div>
+              <div class="text-[11.5px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Fish Pieces</div>
+              <div id="repPieces" class="font-display font-bold text-[22px] mt-1" style="color: var(--text-primary);">0 pcs</div>
+            </div>
+            <div>
+              <div class="text-[11.5px] font-medium uppercase tracking-wide" style="color: var(--text-muted);">Active Clients</div>
+              <div id="repClients" class="font-display font-bold text-[22px] mt-1" style="color: var(--text-primary);">0</div>
+            </div>
+          </div>
+
+          <div id="reportLogsContainer" class="mt-4"></div>
+        </section>
+
+        <!-- ================================================================
+             TAB 5: CLIENTS (CRM DIRECTORY)
+             ================================================================ -->
+        <section id="tab-clients" class="tab-view pt-3">
+          <div class="mb-4">
+            <h1 class="font-display font-bold text-[24px] tracking-tight" style="color: var(--text-primary);">Clients & CRM</h1>
+            <p class="text-[13.5px] mt-1" style="color: var(--text-secondary);">Manage buyers, phone logs, and order history.</p>
+          </div>
+
+          <!-- Search Clients Pill -->
+          <div class="relative mb-5">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="clientSearchInput" type="text" placeholder="Search client name or phone..."
+              class="glass-pill w-full pl-11 pr-4 py-3 rounded-full text-[14px] outline-none"
+              style="color: var(--text-primary);" />
+          </div>
+
+          <div id="clientsListContainer" class="divide-y" style="border-color: var(--border-hairline);"></div>
+        </section>
+
+      </main>
+
+      <!-- ====================================================================
+           CONTEXTUAL FLOATING ACTION BUTTON (FAB)
+           ==================================================================== -->
+      <button id="mainFab"
+        class="gemini-fab absolute right-5 bottom-[84px] z-25 h-12 px-5 rounded-full flex items-center gap-2 font-display font-semibold text-[14px]">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span id="fabLabel">Record Sale</span>
+      </button>
+
+      <!-- ====================================================================
+           MINIMAL BOTTOM NAVIGATION BAR (5 TABS)
+           ==================================================================== -->
+      <nav class="bottom-nav flex items-center justify-between" aria-label="Primary Tabs">
+        <button class="nav-btn active" data-tab="date-sales">
+          <span class="nav-icon-pill">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          <span>Date Sales</span>
+        </button>
+
+        <button class="nav-btn" data-tab="new-sale">
+          <span class="nav-icon-pill">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </span>
+          <span>New Sale</span>
+        </button>
+
+        <button class="nav-btn" data-tab="fish-types">
+          <span class="nav-icon-pill">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6-3.56 0-7.56-2.53-8.5-6Z"></path>
+              <path d="M18 12v.5"></path>
+              <path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"></path>
+              <path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"></path>
+            </svg>
+          </span>
+          <span>Fish Types</span>
+        </button>
+
+        <button class="nav-btn" data-tab="sales-report">
+          <span class="nav-icon-pill">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </span>
+          <span>Report</span>
+        </button>
+
+        <button class="nav-btn" data-tab="clients">
+          <span class="nav-icon-pill">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <span>Clients</span>
+        </button>
+      </nav>
+
+      <!-- ====================================================================
+           100% FULL-SCREEN SLIDE-OUT MENU DRAWER (GEMINI STYLE + SWIPE LEFT)
+           ==================================================================== -->
+      <aside id="fullScreenDrawer" class="fullscreen-drawer" aria-hidden="true">
+        <!-- Top Row: Close/Back Arrow + Synced Badge + Theme Toggle -->
+        <div class="flex items-center justify-between px-5 pt-4 pb-3 shrink-0">
+          <button id="closeDrawerBtn" aria-label="Close Menu"
+            class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-95"
+            style="color: var(--text-primary);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+
+          <!-- Center: Restored Frosted Pill/Box Badge for RAI FISH -->
+          <div class="glass-pill px-4 py-1.5 rounded-full flex items-center justify-center shadow-sm">
+            <span class="font-display font-semibold text-[13.5px] tracking-wide" style="color: var(--text-primary);">RAI FISH</span>
+          </div>
+
+          <button onclick="toggleTheme()" aria-label="Toggle Theme"
+            class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-500/10 active:scale-95"
+            style="color: var(--text-secondary);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Full-Width Menu Content -->
+        <div class="flex-1 overflow-y-auto px-5 py-2 flex flex-col justify-between">
+          <div>
+            <!-- Subtle Account Greeting -->
+            <div class="flex items-center gap-3.5 px-2 py-4 mb-2 hairline-b">
+              <div class="avatar-ring">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center font-display font-bold text-[15px] text-white"
+                  style="background: linear-gradient(135deg, #1a73e8 0%, #5e97f6 100%);">
+                  IO
+                </div>
+              </div>
+              <div>
+                <div class="font-display font-bold text-[17px] tracking-tight" style="color: var(--text-primary);">Ignite Op</div>
+                <div class="text-[12.5px]" style="color: var(--text-secondary);">igniteo249@gmail.com</div>
+              </div>
+            </div>
+
+            <!-- Navigation Section -->
+            <div class="text-[11px] font-semibold uppercase tracking-widest px-4 mt-4 mb-2" style="color: var(--text-muted);">Navigation</div>
+            <div class="space-y-1">
+              <button class="drawer-nav-item active" data-drawer-tab="date-sales">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Date Sales</span>
+              </button>
+
+              <button class="drawer-nav-item" data-drawer-tab="new-sale">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span>New Sale</span>
+              </button>
+
+              <button class="drawer-nav-item" data-drawer-tab="fish-types">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6-3.56 0-7.56-2.53-8.5-6Z"></path>
+                  <path d="M18 12v.5"></path>
+                </svg>
+                <span>Fish Types & Rates</span>
+              </button>
+
+              <button class="drawer-nav-item" data-drawer-tab="sales-report">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span>Sales Report</span>
+              </button>
+
+              <button class="drawer-nav-item" data-drawer-tab="clients">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                <span>Clients Directory</span>
+              </button>
+            </div>
+
+            <!-- Utilities -->
+            <div class="text-[11px] font-semibold uppercase tracking-widest px-4 mt-6 mb-2" style="color: var(--text-muted);">More</div>
+            <div class="space-y-1">
+              <button class="drawer-nav-item" onclick="closeDrawer(); openRecycleBinModal();">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                </svg>
+                <span>Recycle Bin</span>
+              </button>
+
+              <button class="drawer-nav-item" onclick="closeDrawer(); openSettingsModal();">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"></path>
+                </svg>
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Clean Bottom Contact & Support Section -->
+          <div class="pt-5 pb-6 mt-6 hairline-t">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-[11.5px] font-semibold uppercase tracking-wider" style="color: var(--text-muted);">Owner / Helpline</div>
+                <div class="font-display font-bold text-[17px] mt-0.5 whitespace-nowrap" style="color: var(--text-primary);">+91 9304565995</div>
+                <div class="text-[12.5px] mt-0.5" style="color: var(--text-secondary);">abhijeetanand1821@gmail.com</div>
+              </div>
+              <a href="tel:+919304565995" onclick="showToast('Calling +91 9304565995...')"
+                class="gemini-fab px-4 py-2.5 rounded-full inline-flex items-center gap-1.5 text-[13px] font-semibold shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                Call Now
+              </a>
+            </div>
+            <div class="text-center text-[11px] mt-5 flex items-center justify-center gap-1.5" style="color: var(--text-muted);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Swipe left anywhere to return to Daily Sales
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ====================================================================
+           MODAL: RECORD NEW FISH SALE
+           ==================================================================== -->
+      <div id="saleModal" class="modal-backdrop">
+        <div class="modal-sheet">
+          <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--border-strong);"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-[18px]" style="color: var(--text-primary);">Record Fish Sale</h3>
+            <button onclick="closeModal('saleModal')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);">✕</button>
+          </div>
+
+          <form id="recordSaleForm" class="space-y-3.5">
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Client Name</label>
+              <input id="saleClientInput" list="clientDatalist" type="text" required placeholder="Select or type client name" class="minimal-input" />
+              <datalist id="clientDatalist"></datalist>
+            </div>
+
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Fish Species</label>
+              <select id="saleSpeciesSelect" class="minimal-input"></select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Weight (kg)</label>
+                <input id="saleWeightInput" type="number" step="0.1" min="0.1" required placeholder="e.g. 5.5" class="minimal-input" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Pieces</label>
+                <input id="salePiecesInput" type="number" step="1" min="1" required placeholder="e.g. 4" class="minimal-input" />
+              </div>
+            </div>
+
+            <!-- Live Bill Preview -->
+            <div class="flex items-center justify-between px-4 py-3.5 rounded-2xl" style="background: var(--accent-soft-bg);">
+              <div>
+                <div id="modalSaleFormula" class="text-[11.5px]" style="color: var(--text-secondary);">0.0 kg × ₹180/kg</div>
+                <div class="text-[12.5px] font-semibold" style="color: var(--text-primary);">Total Bill</div>
+              </div>
+              <div id="modalSaleTotal" class="font-display font-bold text-[22px] gemini-text-gradient">₹0.00</div>
+            </div>
+
+            <button type="submit" class="gemini-fab w-full py-3.5 rounded-full font-display font-semibold text-[15px] mt-2">
+              Save Sale Entry
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODAL: ADD NEW FISH SPECIES
+           ==================================================================== -->
+      <div id="speciesModal" class="modal-backdrop">
+        <div class="modal-sheet">
+          <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--border-strong);"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-[18px]" style="color: var(--text-primary);">Add Fish Species</h3>
+            <button onclick="closeModal('speciesModal')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);">✕</button>
+          </div>
+          <form id="addSpeciesForm" class="space-y-3.5">
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Species Name</label>
+              <input id="newSpeciesName" type="text" required placeholder="e.g. Silver Carp" class="minimal-input" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Rate per kg (₹)</label>
+              <input id="newSpeciesRate" type="number" step="1" min="1" required placeholder="e.g. 160" class="minimal-input" />
+            </div>
+            <button type="submit" class="gemini-fab w-full py-3.5 rounded-full font-display font-semibold text-[15px]">
+              Add Species
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODAL: ADD NEW CLIENT
+           ==================================================================== -->
+      <div id="clientModal" class="modal-backdrop">
+        <div class="modal-sheet">
+          <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--border-strong);"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-[18px]" style="color: var(--text-primary);">Add New Client</h3>
+            <button onclick="closeModal('clientModal')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);">✕</button>
+          </div>
+          <form id="addClientForm" class="space-y-3.5">
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Full Name</label>
+              <input id="newClientName" type="text" required placeholder="e.g. Vikash Singh" class="minimal-input" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Phone Number</label>
+              <input id="newClientPhone" type="tel" required placeholder="+91 98765 43210" class="minimal-input" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-medium mb-1 ml-1" style="color: var(--text-secondary);">Location / Note</label>
+              <input id="newClientNote" type="text" placeholder="Wholesale Buyer · Market" class="minimal-input" />
+            </div>
+            <button type="submit" class="gemini-fab w-full py-3.5 rounded-full font-display font-semibold text-[15px]">
+              Save Client
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODAL: RECYCLE BIN
+           ==================================================================== -->
+      <div id="recycleModal" class="modal-backdrop">
+        <div class="modal-sheet">
+          <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--border-strong);"></div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display font-bold text-[18px]" style="color: var(--text-primary);">Recycle Bin</h3>
+            <button onclick="closeModal('recycleModal')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);">✕</button>
+          </div>
+          <div id="recycleBinList" class="space-y-2 max-h-64 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODAL: SETTINGS
+           ==================================================================== -->
+      <div id="settingsModal" class="modal-backdrop">
+        <div class="modal-sheet">
+          <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background: var(--border-strong);"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-[18px]" style="color: var(--text-primary);">App Settings</h3>
+            <button onclick="closeModal('settingsModal')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);">✕</button>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between py-3 hairline-b">
+              <div>
+                <div class="font-medium text-[14.5px]" style="color: var(--text-primary);">Appearance</div>
+                <div class="text-[12px]" style="color: var(--text-secondary);">Gemini Light Frost or AMOLED Blue Glow</div>
+              </div>
+              <button onclick="toggleTheme()" class="px-3.5 py-1.5 rounded-full text-[12.5px] font-semibold" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                Switch Theme
+              </button>
+            </div>
+            <div class="flex items-center justify-between py-3 hairline-b">
+              <div>
+                <div class="font-medium text-[14.5px]" style="color: var(--text-primary);">Google Drive Auto-Sync</div>
+                <div class="text-[12px]" style="color: var(--text-secondary);">igniteo249@gmail.com</div>
+              </div>
+              <span class="text-[12px] font-semibold" style="color: var(--accent-primary);">Active</span>
+            </div>
+            <div class="flex items-center justify-between py-3">
+              <div>
+                <div class="font-medium text-[14.5px]" style="color: var(--text-primary);">Demo Data</div>
+                <div class="text-[12px]" style="color: var(--text-secondary);">Populate sample pond sales for today</div>
+              </div>
+              <button onclick="loadSampleSales(); closeModal('settingsModal');" class="px-3.5 py-1.5 rounded-full text-[12.5px] font-semibold" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                Load Demo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div id="toastPill" class="toast-pill"></div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       APPLICATION LOGIC & INTERACTIVE STATE
+       ======================================================================== -->
+  <script>
+    /* ------------------------------------------------------------------------
+       1. STATE MANAGEMENT
+       ------------------------------------------------------------------------ */
+    const TODAY_STR = '2026-11-24';
+
+    const state = {
+      theme: 'light',
+      activeTab: 'date-sales',
+      selectedDate: TODAY_STR,
+      reportPeriod: '7d',
+      reportSpecificDate: null,
+      expandedClientId: null,
+      fishTypes: [
+        { id: 'f1', name: 'Rohu', rate: 180 },
+        { id: 'f2', name: 'Katla', rate: 210 },
+        { id: 'f3', name: 'Pangas', rate: 140 },
+        { id: 'f4', name: 'Mrigal', rate: 165 }
+      ],
+      clients: [
+        { id: 'c1', name: 'Ramesh Kumar', phone: '+91 98351 22410', note: 'Wholesale Buyer · Mandi' },
+        { id: 'c2', name: 'Suresh Yadav', phone: '+91 94312 88741', note: 'Regular Pond Retailer' }
+      ],
+      sales: [], // Starts empty on Home to match clean initial state; user can add or tap "Load Sample Sales"
+      deletedSales: []
+    };
+
+    /* ------------------------------------------------------------------------
+       2. UTILITY HELPERS
+       ------------------------------------------------------------------------ */
+    function formatCurrency(val) {
+      return '₹' + Number(val || 0).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function formatShortDate(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const formatted = `${d} ${months[dt.getMonth()]} ${y}`;
+      if (dateStr === TODAY_STR) return `Today · ${formatted}`;
+      if (dateStr === '2026-11-23') return `Yesterday · ${formatted}`;
+      return formatted;
+    }
+
+    function shiftDate(dateStr, deltaDays) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d + deltaDays);
+      const ny = dt.getFullYear();
+      const nm = String(dt.getMonth() + 1).padStart(2, '0');
+      const nd = String(dt.getDate()).padStart(2, '0');
+      return `${ny}-${nm}-${nd}`;
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toastPill');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    function syncNowToast() {
+      showToast('Ledger synced with Google Drive');
+    }
+
+    /* ------------------------------------------------------------------------
+       3. THEME SWITCHING (GEMINI LIGHT / DARK)
+       ------------------------------------------------------------------------ */
+    function toggleTheme() {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.getElementById('iconMoon').classList.toggle('hidden', state.theme === 'dark');
+      document.getElementById('iconSun').classList.toggle('hidden', state.theme === 'light');
+    }
+
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+    /* ------------------------------------------------------------------------
+       4. ACCOUNT POPOVER
+       ------------------------------------------------------------------------ */
+    const accountPopover = document.getElementById('accountPopover');
+    document.getElementById('avatarBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      accountPopover.classList.toggle('open');
+    });
+
+    function closeAccountPopover() {
+      accountPopover.classList.remove('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!accountPopover.contains(e.target) && e.target.id !== 'avatarBtn') {
+        closeAccountPopover();
+      }
+    });
+
+    /* ------------------------------------------------------------------------
+       5. 100% FULL-SCREEN SLIDE-OUT DRAWER + SMOOTH DRAG-TO-CLOSE
+       ------------------------------------------------------------------------ */
+    const drawer = document.getElementById('fullScreenDrawer');
+    let isDrawerOpen = false;
+
+    function openDrawer() {
+      closeAccountPopover();
+      isDrawerOpen = true;
+      drawer.style.transform = '';
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDrawer() {
+      isDrawerOpen = false;
+      drawer.style.transform = '';
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('openDrawerBtn').addEventListener('click', openDrawer);
+    document.getElementById('closeDrawerBtn').addEventListener('click', closeDrawer);
+
+    // Touch & Mouse Drag-to-Slide Left to Dismiss Drawer
+    let dragStartX = 0;
+    let dragCurrentX = 0;
+    let isDraggingDrawer = false;
+
+    drawer.addEventListener('pointerdown', (e) => {
+      if (!isDrawerOpen) return;
+      // Avoid interfering with direct button clicks unless user drags horizontally
+      dragStartX = e.clientX;
+      dragCurrentX = e.clientX;
+      isDraggingDrawer = true;
+    });
+
+    drawer.addEventListener('pointermove', (e) => {
+      if (!isDraggingDrawer || !isDrawerOpen) return;
+      const dx = e.clientX - dragStartX;
+      if (dx < -8) {
+        drawer.classList.add('dragging');
+        drawer.style.transform = `translateX(${dx}px)`;
+      }
+      dragCurrentX = e.clientX;
+    });
+
+    function endDrawerDrag() {
+      if (!isDraggingDrawer) return;
+      isDraggingDrawer = false;
+      drawer.classList.remove('dragging');
+      const dx = dragCurrentX - dragStartX;
+      const threshold = drawer.offsetWidth * 0.25;
+      if (dx < -threshold) {
+        closeDrawer();
+      } else {
+        drawer.style.transform = '';
+      }
+    }
+
+    drawer.addEventListener('pointerup', endDrawerDrag);
+    drawer.addEventListener('pointercancel', endDrawerDrag);
+
+    /* ------------------------------------------------------------------------
+       6. TAB NAVIGATION
+       ------------------------------------------------------------------------ */
+    const tabLabels = {
+      'date-sales': 'Date Sales',
+      'new-sale': 'New Sale',
+      'fish-types': 'Fish Types',
+      'sales-report': 'Sales Report',
+      'clients': 'Clients'
+    };
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+
+      // Update tab views
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+
+      // Update bottom nav
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+
+      // Update drawer active row
+      document.querySelectorAll('[data-drawer-tab]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.drawerTab === tabId);
+      });
+
+      // Update clean header title to match active tab
+      document.getElementById('headerContextLabel').textContent = tabLabels[tabId] || 'Date Sales';
+
+      // Contextual FAB behavior
+      const fab = document.getElementById('mainFab');
+      const fabLabel = document.getElementById('fabLabel');
+      if (tabId === 'date-sales') {
+        fab.classList.remove('hidden');
+        fabLabel.textContent = 'Record Sale';
+        fab.onclick = openRecordSaleModal;
+      } else if (tabId === 'new-sale') {
+        fab.classList.remove('hidden');
+        fabLabel.textContent = 'Add Order';
+        fab.onclick = openRecordSaleModal;
+      } else if (tabId === 'fish-types') {
+        fab.classList.remove('hidden');
+        fabLabel.textContent = 'New Species';
+        fab.onclick = openAddSpeciesModal;
+      } else if (tabId === 'clients') {
+        fab.classList.remove('hidden');
+        fabLabel.textContent = 'Add Client';
+        fab.onclick = openAddClientModal;
+      } else {
+        fab.classList.add('hidden');
+      }
+
+      renderAll();
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll('[data-drawer-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.dataset.drawerTab);
+        closeDrawer();
+      });
+    });
+
+    /* ------------------------------------------------------------------------
+       7. RENDERERS FOR ALL 5 TABS
+       ------------------------------------------------------------------------ */
+    function renderAll() {
+      renderDateSales();
+      renderNewSale();
+      renderFishTypes();
+      renderSalesReport();
+      renderClients();
+      populateSaleFormDropdowns();
+    }
+
+    // --- TAB 1: DATE SALES ---
+    function renderDateSales() {
+      document.getElementById('currentDateLabel').textContent = formatShortDate(state.selectedDate);
+      const q = (document.getElementById('homeSearchInput').value || '').trim().toLowerCase();
+
+      const daySales = state.sales.filter(s => s.date === state.selectedDate);
+      const filtered = daySales.filter(s =>
+        !q || s.clientName.toLowerCase().includes(q) || s.fishName.toLowerCase().includes(q)
+      );
+
+      const totalAmt = daySales.reduce((acc, s) => acc + s.total, 0);
+      const totalKg = daySales.reduce((acc, s) => acc + s.weight, 0);
+      const totalPcs = daySales.reduce((acc, s) => acc + s.pieces, 0);
+      const uniqueClients = new Set(daySales.map(s => s.clientName)).size;
+
+      document.getElementById('homeTotalAmount').textContent = formatCurrency(totalAmt);
+      document.getElementById('homeTotalClients').textContent = `${uniqueClients} ${uniqueClients === 1 ? 'client' : 'clients'}`;
+      document.getElementById('homeTotalWeight').innerHTML = `${totalKg.toFixed(1)} <span class="text-[18px] font-semibold" style="color: var(--text-secondary);">kg</span>`;
+      document.getElementById('homeTotalPieces').textContent = `${totalPcs} pieces`;
+      document.getElementById('homeSalesBadge').textContent = `${filtered.length} ${filtered.length === 1 ? 'sale' : 'sales'}`;
+
+      const container = document.getElementById('homeSalesContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 px-4 text-center flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-4" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+              </svg>
+            </div>
+            <div class="font-display font-semibold text-[15.5px]" style="color: var(--text-primary);">No fish sales recorded</div>
+            <p class="text-[13px] mt-1.5 max-w-[260px] leading-relaxed" style="color: var(--text-secondary);">
+              Selling directly from your pond? Tap Record Sale to track weight and payments.
+            </p>
+            ${state.sales.length === 0 ? `
+              <button onclick="loadSampleSales()"
+                class="mt-5 px-4 py-2 rounded-full text-[12.5px] font-semibold transition-transform active:scale-95"
+                style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                Load Sample Sales
+              </button>
+            ` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `<div class="divide-y" style="border-color: var(--border-hairline);">` +
+        filtered.map(s => `
+          <div class="py-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center font-display font-bold text-[14px] shrink-0"
+                style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                ${s.clientName.charAt(0).toUpperCase()}
+              </div>
+              <div class="min-w-0">
+                <div class="font-semibold text-[14.5px] truncate" style="color: var(--text-primary);">${s.clientName}</div>
+                <div class="text-[12.5px] truncate" style="color: var(--text-secondary);">
+                  ${s.fishName} · ${s.weight.toFixed(1)} kg · ${s.pieces} pcs
+                </div>
+              </div>
+            </div>
+            <div class="text-right shrink-0 flex items-center gap-2.5">
+              <div>
+                <div class="font-display font-bold text-[15px]" style="color: var(--text-primary);">${formatCurrency(s.total)}</div>
+                <div class="text-[11px]" style="color: var(--text-muted);">₹${s.rate}/kg</div>
+              </div>
+              <button onclick="deleteSale('${s.id}')" aria-label="Delete Sale"
+                class="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-500/10 transition-colors"
+                style="color: var(--text-muted);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `).join('') + `</div>`;
+    }
+
+    // --- TAB 2: NEW SALE ---
+    function renderNewSale() {
+      const rev = state.sales.reduce((a, s) => a + s.total, 0);
+      const wt = state.sales.reduce((a, s) => a + s.weight, 0);
+      const pcs = state.sales.reduce((a, s) => a + s.pieces, 0);
+
+      document.getElementById('nsRevenue').textContent = '₹' + Math.round(rev).toLocaleString('en-IN');
+      document.getElementById('nsWeight').textContent = `${wt.toFixed(1)} kg`;
+      document.getElementById('nsPieces').textContent = `${pcs} pcs`;
+      document.getElementById('nsHistoryTitle').textContent = `Sales History (${state.sales.length})`;
+
+      const list = document.getElementById('newSaleHistoryList');
+      if (state.sales.length === 0) {
+        list.innerHTML = `
+          <div class="py-12 text-center flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
+            <div class="font-display font-semibold text-[15px]" style="color: var(--text-primary);">No sales recorded yet</div>
+            <p class="text-[13px] mt-1 max-w-[250px]" style="color: var(--text-secondary);">Tap Add Order to enter client, weight & pieces for auto-pricing.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = `<div class="divide-y" style="border-color: var(--border-hairline);">` +
+        state.sales.map(s => `
+          <div class="py-3.5 flex items-center justify-between">
+            <div>
+              <div class="font-semibold text-[14.5px]" style="color: var(--text-primary);">${s.clientName}</div>
+              <div class="text-[12px] mt-0.5" style="color: var(--text-secondary);">
+                ${s.fishName} · ${s.weight.toFixed(1)} kg × ₹${s.rate}/kg · ${s.pieces} pcs
+              </div>
+              <div class="text-[11px] mt-0.5" style="color: var(--text-muted);">${formatShortDate(s.date)}</div>
+            </div>
+            <div class="font-display font-bold text-[15.5px]" style="color: var(--accent-primary);">${formatCurrency(s.total)}</div>
+          </div>
+        `).join('') + `</div>`;
+    }
+
+    // --- TAB 3: FISH TYPES & CALCULATOR ---
+    function renderFishTypes() {
+      const sel = document.getElementById('calcSpeciesSelect');
+      const prevVal = sel.value;
+      sel.innerHTML = state.fishTypes.map(f =>
+        `<option value="${f.id}">${f.name} — ₹${f.rate}/kg</option>`
+      ).join('');
+      if (prevVal && state.fishTypes.some(f => f.id === prevVal)) sel.value = prevVal;
+
+      updateLiveCalculator();
+
+      document.getElementById('speciesListTitle').textContent = `Fish Species & Rates (${state.fishTypes.length})`;
+      const list = document.getElementById('fishSpeciesList');
+      list.innerHTML = state.fishTypes.map(f => `
+        <div class="py-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center font-display font-bold text-[13px]"
+              style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+              ${f.name.slice(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <div class="font-semibold text-[14.5px]" style="color: var(--text-primary);">${f.name}</div>
+              <div class="text-[12px]" style="color: var(--text-secondary);">Weight-based rate</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-display font-bold text-[15px]" style="color: var(--text-primary);">₹${f.rate}<span class="text-[12px] font-normal" style="color: var(--text-muted);">/kg</span></span>
+            <button onclick="deleteSpecies('${f.id}')" aria-label="Remove Species"
+              class="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-500/10" style="color: var(--text-muted);">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateLiveCalculator() {
+      const id = document.getElementById('calcSpeciesSelect').value;
+      const fish = state.fishTypes.find(f => f.id === id) || state.fishTypes[0];
+      const weight = parseFloat(document.getElementById('calcWeightInput').value) || 0;
+      const rate = fish ? fish.rate : 0;
+      const total = weight * rate;
+
+      document.getElementById('calcFormulaText').textContent = `${weight.toFixed(2)} kg × ₹${rate}/kg`;
+      document.getElementById('calcResultPrice').textContent = formatCurrency(total);
+    }
+
+    document.getElementById('calcSpeciesSelect').addEventListener('change', updateLiveCalculator);
+    document.getElementById('calcWeightInput').addEventListener('input', updateLiveCalculator);
+    document.getElementById('calcPiecesInput').addEventListener('input', updateLiveCalculator);
+
+    // --- TAB 4: SALES REPORT ---
+    function getFilteredReportSales() {
+      if (state.reportSpecificDate) {
+        return state.sales.filter(s => s.date === state.reportSpecificDate);
+      }
+      if (state.reportPeriod === 'today') {
+        return state.sales.filter(s => s.date === TODAY_STR);
+      }
+      if (state.reportPeriod === 'yesterday') {
+        return state.sales.filter(s => s.date === '2026-11-23');
+      }
+      // 7d or 30d
+      return state.sales;
+    }
+
+    function renderSalesReport() {
+      const rows = getFilteredReportSales();
+      const rev = rows.reduce((a, s) => a + s.total, 0);
+      const wt = rows.reduce((a, s) => a + s.weight, 0);
+      const pcs = rows.reduce((a, s) => a + s.pieces, 0);
+      const cli = new Set(rows.map(s => s.clientName)).size;
+
+      const labelMap = { today: 'Today', yesterday: 'Yesterday', '7d': 'Last 7 Days', '30d': 'Last 30 Days' };
+      const label = state.reportSpecificDate
+        ? `Fish sales · ${formatShortDate(state.reportSpecificDate)}`
+        : `Fish sales · ${labelMap[state.reportPeriod]}`;
+
+      document.getElementById('reportRangeLabel').textContent = label;
+      document.getElementById('reportLogsCount').textContent = `${rows.length} ${rows.length === 1 ? 'log' : 'logs'}`;
+      document.getElementById('repRevenue').textContent = formatCurrency(rev);
+      document.getElementById('repWeight').textContent = `${wt.toFixed(1)} kg`;
+      document.getElementById('repPieces').textContent = `${pcs} pcs`;
+      document.getElementById('repClients').textContent = cli;
+
+      const logsEl = document.getElementById('reportLogsContainer');
+      if (rows.length === 0) {
+        logsEl.innerHTML = `<div class="py-8 text-center text-[13px]" style="color: var(--text-muted);">No sales records in this period.</div>`;
+      } else {
+        logsEl.innerHTML = `<div class="divide-y" style="border-color: var(--border-hairline);">` +
+          rows.map(s => `
+            <div class="py-3 flex items-center justify-between text-[13.5px]">
+              <div>
+                <div class="font-medium" style="color: var(--text-primary);">${s.clientName} · ${s.fishName}</div>
+                <div class="text-[11.5px]" style="color: var(--text-secondary);">${s.date} · ${s.weight.toFixed(1)} kg (${s.pieces} pcs)</div>
+              </div>
+              <div class="font-display font-semibold" style="color: var(--text-primary);">${formatCurrency(s.total)}</div>
+            </div>
+          `).join('') + `</div>`;
+      }
+    }
+
+    document.querySelectorAll('.seg-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.reportSpecificDate = null;
+        state.reportPeriod = btn.dataset.period;
+        document.querySelectorAll('.seg-pill').forEach(b => b.classList.toggle('active', b === btn));
+        renderSalesReport();
+      });
+    });
+
+    document.getElementById('reportDateInput').addEventListener('change', (e) => {
+      state.reportSpecificDate = e.target.value;
+      document.querySelectorAll('.seg-pill').forEach(b => b.classList.remove('active'));
+      renderSalesReport();
+    });
+
+    function setReportSpecificDate(dateStr) {
+      document.getElementById('reportDateInput').value = dateStr;
+      state.reportSpecificDate = dateStr;
+      document.querySelectorAll('.seg-pill').forEach(b => b.classList.remove('active'));
+      renderSalesReport();
+    }
+
+    function exportSalesCSV() {
+      const rows = getFilteredReportSales();
+      if (rows.length === 0) {
+        showToast('No sales to export for this period');
+        return;
+      }
+      const header = 'Date,Client,Fish,Weight(kg),Pieces,Rate,Total(INR)\n';
+      const body = rows.map(r => `${r.date},"${r.clientName}",${r.fishName},${r.weight},${r.pieces},${r.rate},${r.total}`).join('\n');
+      const blob = new Blob([header + body], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `fish-sales-report-${state.selectedDate}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV Report downloaded');
+    }
+
+    // --- TAB 5: CLIENTS (CRM) ---
+    function renderClients() {
+      const q = (document.getElementById('clientSearchInput').value || '').trim().toLowerCase();
+      const filtered = state.clients.filter(c =>
+        !q || c.name.toLowerCase().includes(q) || c.phone.toLowerCase().includes(q)
+      );
+
+      const container = document.getElementById('clientsListContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="py-12 text-center text-[13.5px]" style="color: var(--text-muted);">No matching clients found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(c => {
+        const cSales = state.sales.filter(s => s.clientName.toLowerCase() === c.name.toLowerCase());
+        const spent = cSales.reduce((a, s) => a + s.total, 0);
+        const kg = cSales.reduce((a, s) => a + s.weight, 0);
+        const isExpanded = state.expandedClientId === c.id;
+
+        return `
+          <div class="py-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center font-display font-bold text-[15px] shrink-0"
+                  style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                  ${c.name.charAt(0).toUpperCase()}
+                </div>
+                <div class="min-w-0">
+                  <div class="font-display font-semibold text-[15px] truncate" style="color: var(--text-primary);">${c.name}</div>
+                  <div class="text-[12px] truncate" style="color: var(--text-secondary);">${c.phone}</div>
+                </div>
+              </div>
+
+              <!-- Quick Action Icons (Call, Invoice, Payment, Delete) -->
+              <div class="flex items-center gap-1 shrink-0">
+                <a href="tel:${c.phone}" onclick="showToast('Calling ${c.name}...')"
+                  class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--accent-primary);" aria-label="Call">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                </a>
+                <button onclick="showToast('Invoice summary copied for ${c.name}')"
+                  class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);" aria-label="Invoice">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </button>
+                <button onclick="showToast('Payment marked settled for ${c.name}')"
+                  class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500/10" style="color: var(--text-secondary);" aria-label="Payment">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                  </svg>
+                </button>
+                <button onclick="deleteClient('${c.id}')"
+                  class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500/10" style="color: var(--danger-text);" aria-label="Delete">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Subtle Spent / KG Tags -->
+            <div class="flex items-center gap-2 mt-3">
+              <span class="text-[11.5px] font-medium px-2.5 py-1 rounded-full" style="background: var(--accent-soft-bg); color: var(--accent-primary);">
+                Spent: ${formatCurrency(spent)}
+              </span>
+              <span class="text-[11.5px] font-medium px-2.5 py-1 rounded-full" style="background: var(--surface-pill); color: var(--text-secondary);">
+                ${kg.toFixed(1)} kg bought
+              </span>
+            </div>
+
+            <!-- Expandable Sales History Accordion -->
+            <button onclick="toggleClientHistory('${c.id}')"
+              class="w-full flex items-center justify-between mt-3 pt-1 text-[12.5px] font-medium"
+              style="color: var(--text-secondary);">
+              <span>Sales History (${cSales.length} ${cSales.length === 1 ? 'order' : 'orders'})</span>
+              <svg class="transition-transform ${isExpanded ? 'rotate-180' : ''}" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            ${isExpanded ? `
+              <div class="mt-2.5 pl-3 border-l-2 space-y-2" style="border-color: var(--border-strong);">
+                ${cSales.length === 0
+                  ? `<div class="text-[12px] py-1" style="color: var(--text-muted);">No orders recorded for ${c.name} yet.</div>`
+                  : cSales.map(s => `
+                    <div class="flex items-center justify-between text-[12.5px]">
+                      <span style="color: var(--text-secondary);">${s.fishName} · ${s.weight.toFixed(1)} kg (${s.date})</span>
+                      <span class="font-semibold" style="color: var(--text-primary);">${formatCurrency(s.total)}</span>
+                    </div>
+                  `).join('')
+                }
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleClientHistory(id) {
+      state.expandedClientId = state.expandedClientId === id ? null : id;
+      renderClients();
+    }
+
+    /* ------------------------------------------------------------------------
+       8. MODALS, FORMS & DATA MUTATIONS
+       ------------------------------------------------------------------------ */
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // Close modals when tapping backdrop
+    document.querySelectorAll('.modal-backdrop').forEach(bg => {
+      bg.addEventListener('click', (e) => {
+        if (e.target === bg) bg.classList.remove('open');
+      });
+    });
+
+    function populateSaleFormDropdowns() {
+      const spSelect = document.getElementById('saleSpeciesSelect');
+      spSelect.innerHTML = state.fishTypes.map(f =>
+        `<option value="${f.id}">${f.name} (₹${f.rate}/kg)</option>`
+      ).join('');
+
+      const dl = document.getElementById('clientDatalist');
+      dl.innerHTML = state.clients.map(c => `<option value="${c.name}"></option>`).join('');
+      updateModalSalePreview();
+    }
+
+    function updateModalSalePreview() {
+      const fish = state.fishTypes.find(f => f.id === document.getElementById('saleSpeciesSelect').value) || state.fishTypes[0];
+      const wt = parseFloat(document.getElementById('saleWeightInput').value) || 0;
+      const rate = fish ? fish.rate : 0;
+      document.getElementById('modalSaleFormula').textContent = `${wt.toFixed(1)} kg × ₹${rate}/kg`;
+      document.getElementById('modalSaleTotal').textContent = formatCurrency(wt * rate);
+    }
+
+    document.getElementById('saleSpeciesSelect').addEventListener('change', updateModalSalePreview);
+    document.getElementById('saleWeightInput').addEventListener('input', updateModalSalePreview);
+
+    function openRecordSaleModal() {
+      populateSaleFormDropdowns();
+      document.getElementById('recordSaleForm').reset();
+      updateModalSalePreview();
+      openModal('saleModal');
+    }
+
+    function openAddSpeciesModal() {
+      document.getElementById('addSpeciesForm').reset();
+      openModal('speciesModal');
+    }
+
+    function openAddClientModal() {
+      document.getElementById('addClientForm').reset();
+      openModal('clientModal');
+    }
+
+    function openSettingsModal() {
+      openModal('settingsModal');
+    }
+
+    function openRecycleBinModal() {
+      const list = document.getElementById('recycleBinList');
+      if (state.deletedSales.length === 0) {
+        list.innerHTML = `<div class="py-8 text-center text-[13px]" style="color: var(--text-muted);">Recycle bin is empty.</div>`;
+      } else {
+        list.innerHTML = state.deletedSales.map(s => `
+          <div class="flex items-center justify-between py-2.5 hairline-b">
+            <div>
+              <div class="font-medium text-[13.5px]" style="color: var(--text-primary);">${s.clientName} · ${s.fishName}</div>
+              <div class="text-[11.5px]" style="color: var(--text-secondary);">${s.weight} kg · ${formatCurrency(s.total)}</div>
+            </div>
+            <button onclick="restoreSale('${s.id}')" class="px-3 py-1 rounded-full text-[12px] font-semibold" style="background: var(--accent-soft-bg); color: var(--accent-primary);">Restore</button>
+          </div>
+        `).join('');
+      }
+      openModal('recycleModal');
+    }
+
+    // Form Submit: Record Fish Sale
+    document.getElementById('recordSaleForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const clientName = document.getElementById('saleClientInput').value.trim();
+      const fish = state.fishTypes.find(f => f.id === document.getElementById('saleSpeciesSelect').value);
+      const weight = parseFloat(document.getElementById('saleWeightInput').value) || 0;
+      const pieces = parseInt(document.getElementById('salePiecesInput').value, 10) || 0;
+
+      if (!clientName || !fish || weight <= 0) return;
+
+      const newSale = {
+        id: 's' + Date.now(),
+        date: state.selectedDate,
+        clientName,
+        fishName: fish.name,
+        rate: fish.rate,
+        weight,
+        pieces,
+        total: weight * fish.rate
+      };
+
+      state.sales.unshift(newSale);
+
+      // Auto-register client in CRM if new
+      if (!state.clients.some(c => c.name.toLowerCase() === clientName.toLowerCase())) {
+        state.clients.unshift({
+          id: 'c' + Date.now(),
+          name: clientName,
+          phone: '+91 90000 00000',
+          note: 'Added via Sale'
+        });
+      }
+
+      closeModal('saleModal');
+      renderAll();
+      showToast(`Sale recorded · ${formatCurrency(newSale.total)}`);
+    });
+
+    // Form Submit: Add Fish Species
+    document.getElementById('addSpeciesForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('newSpeciesName').value.trim();
+      const rate = parseFloat(document.getElementById('newSpeciesRate').value) || 0;
+      if (!name || rate <= 0) return;
+
+      state.fishTypes.push({ id: 'f' + Date.now(), name, rate });
+      closeModal('speciesModal');
+      renderAll();
+      showToast(`${name} (₹${rate}/kg) added`);
+    });
+
+    // Form Submit: Add Client
+    document.getElementById('addClientForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('newClientName').value.trim();
+      const phone = document.getElementById('newClientPhone').value.trim();
+      const note = document.getElementById('newClientNote').value.trim() || 'Pond Customer';
+      if (!name) return;
+
+      state.clients.unshift({ id: 'c' + Date.now(), name, phone, note });
+      closeModal('clientModal');
+      renderAll();
+      showToast(`${name} added to CRM`);
+    });
+
+    function deleteSale(id) {
+      const idx = state.sales.findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [removed] = state.sales.splice(idx, 1);
+      state.deletedSales.unshift(removed);
+      renderAll();
+      showToast('Moved to Recycle Bin');
+    }
+
+    function restoreSale(id) {
+      const idx = state.deletedSales.findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [restored] = state.deletedSales.splice(idx, 1);
+      state.sales.unshift(restored);
+      openRecycleBinModal();
+      renderAll();
+      showToast('Sale restored');
+    }
+
+    function deleteSpecies(id) {
+      if (state.fishTypes.length <= 1) {
+        showToast('At least one fish species is required');
+        return;
+      }
+      state.fishTypes = state.fishTypes.filter(f => f.id !== id);
+      renderAll();
+      showToast('Species removed');
+    }
+
+    function deleteClient(id) {
+      state.clients = state.clients.filter(c => c.id !== id);
+      renderAll();
+      showToast('Client removed');
+    }
+
+    function loadSampleSales() {
+      state.sales = [
+        { id: 's101', date: state.selectedDate, clientName: 'Ramesh Kumar', fishName: 'Rohu', rate: 180, weight: 12.5, pieces: 9, total: 2250 },
+        { id: 's102', date: state.selectedDate, clientName: 'Suresh Yadav', fishName: 'Katla', rate: 210, weight: 8.0, pieces: 5, total: 1680 },
+        { id: 's103', date: '2026-11-23', clientName: 'Ramesh Kumar', fishName: 'Pangas', rate: 140, weight: 15.0, pieces: 12, total: 2100 }
+      ];
+      renderAll();
+      showToast('Sample pond sales loaded');
+    }
+
+    /* ------------------------------------------------------------------------
+       9. DATE CONTROLS & SEARCH LISTENERS
+       ------------------------------------------------------------------------ */
+    document.getElementById('prevDateBtn').addEventListener('click', () => {
+      state.selectedDate = shiftDate(state.selectedDate, -1);
+      renderDateSales();
+    });
+
+    document.getElementById('nextDateBtn').addEventListener('click', () => {
+      state.selectedDate = shiftDate(state.selectedDate, 1);
+      renderDateSales();
+    });
+
+    document.getElementById('dateDisplayBtn').addEventListener('click', () => {
+      state.selectedDate = TODAY_STR;
+      renderDateSales();
+      showToast('Jumped to Today');
+    });
+
+    document.getElementById('homeSearchInput').addEventListener('input', renderDateSales);
+    document.getElementById('clientSearchInput').addEventListener('input', renderClients);
+
+    /* ------------------------------------------------------------------------
+       10. INITIALIZE APP
+       ------------------------------------------------------------------------ */
+    window.addEventListener('DOMContentLoaded', () => {
+      switchTab('date-sales');
+    });
+  </script>
+</body>
+</html>
